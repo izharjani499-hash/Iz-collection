@@ -1672,3 +1672,263 @@ document.getElementById('totalPrice').innerText = 'کل قیمت: Rs ' + total;
 
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>شکریہ برائے خریداری</title>
+<style>
+body{
+margin:0;
+padding:0;
+font-family:"Noto Nastaliq Urdu", Tahoma, Arial, sans-serif;
+background: url('https://images.unsplash.com/photo-1601924638867-3ec6d8f3f1b5?auto=format&fit=crop&w=1200&q=60') no-repeat center center/cover;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+color:#fff;
+text-align:center;
+flex-direction:column;
+}
+.container{
+background:rgba(0,0,0,0.7);
+padding:30px;
+border-radius:16px;
+max-width:700px;
+width:90%;
+}
+h1{
+font-size:36px;
+margin-bottom:16px;
+}
+p{
+font-size:18px;
+margin-bottom:24px;
+}
+.btn{
+background:#ff6600;
+color:#111;
+padding:12px 24px;
+border:none;
+border-radius:12px;
+font-weight:700;
+cursor:pointer;
+text-decoration:none;
+}
+.order-summary{
+background:rgba(255,255,255,0.1);
+padding:16px;
+border-radius:12px;
+margin-top:20px;
+text-align:right;
+max-height:300px;
+overflow-y:auto;
+}
+.order-item{
+display:flex;
+gap:12px;
+align-items:center;
+margin-bottom:12px;
+border-bottom:1px solid rgba(255,255,255,0.2);
+padding-bottom:8px;
+}
+.order-item img{
+width:60px;
+height:60px;
+object-fit:cover;
+border-radius:8px;
+}
+.order-item-details{
+flex:1;
+text-align:right;
+}
+.order-item-details div{
+margin-bottom:4px;
+font-weight:600;
+}
+.total-price{
+margin-top:12px;
+font-size:18px;
+font-weight:800;
+text-align:right;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h1>شکریہ برائے خریداری!</h1>
+<p>آپ کا آرڈر کامیابی سے مکمل ہو گیا ہے۔</p>
+
+<div class="order-summary" id="orderSummary">
+<!-- Products will be dynamically added here -->
+</div>
+
+<div class="total-price" id="totalPrice">کل قیمت: Rs 0</div>
+
+<a href="index.html" class="btn">دوبارہ خریداری کریں</a>
+</div>
+
+<script>
+// Sample order data (یہ data آپ اپنے cart system سے لے سکتے ہیں)
+const orderItems = [
+{img:'https://images.unsplash.com/photo-1601924638867-3ec6d8f3f1b5?auto=format&fit=crop&w=1200&q=60', name:'Bedsheet King Cotton', price:1800, qty:1},
+{img:'https://images.unsplash.com/photo-1582582494704-0a1d2b21fa14?auto=format&fit=crop&w=1200&q=60', name:'Fashion Kurta', price:1200, qty:2},
+{img:'https://images.unsplash.com/photo-1582582494704-0a1d2b21fa14?auto=format&fit=crop&w=1200&q=60', name:'Kitchen Towel Set', price:800, qty:1}
+];
+
+const orderSummary = document.getElementById('orderSummary');
+let total = 0;
+
+orderItems.forEach(item=>{
+    const div = document.createElement('div');
+    div.className='order-item';
+    div.innerHTML=`
+        <img src="${item.img}" alt="${item.name}">
+        <div class="order-item-details">
+            <div>پروڈکٹ: ${item.name}</div>
+            <div>قیمت: Rs ${item.price}</div>
+            <div>مقدار: ${item.qty}</div>
+        </div>
+    `;
+    orderSummary.appendChild(div);
+    total += item.price * item.qty;
+});
+
+document.getElementById('totalPrice').innerText = 'کل قیمت: Rs ' + total;
+</script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>شکریہ برائے خریداری</title>
+<style>
+body{
+margin:0;
+padding:0;
+font-family:"Noto Nastaliq Urdu", Tahoma, Arial, sans-serif;
+background: url('https://images.unsplash.com/photo-1601924638867-3ec6d8f3f1b5?auto=format&fit=crop&w=1200&q=60') no-repeat center center/cover;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+color:#fff;
+text-align:center;
+flex-direction:column;
+}
+.container{
+background:rgba(0,0,0,0.7);
+padding:30px;
+border-radius:16px;
+max-width:700px;
+width:90%;
+}
+h1{
+font-size:36px;
+margin-bottom:16px;
+}
+p{
+font-size:18px;
+margin-bottom:24px;
+}
+.btn{
+background:#ff6600;
+color:#111;
+padding:12px 24px;
+border:none;
+border-radius:12px;
+font-weight:700;
+cursor:pointer;
+text-decoration:none;
+}
+.order-summary{
+background:rgba(255,255,255,0.1);
+padding:16px;
+border-radius:12px;
+margin-top:20px;
+text-align:right;
+max-height:300px;
+overflow-y:auto;
+}
+.order-item{
+display:flex;
+gap:12px;
+align-items:center;
+margin-bottom:12px;
+border-bottom:1px solid rgba(255,255,255,0.2);
+padding-bottom:8px;
+}
+.order-item img{
+width:60px;
+height:60px;
+object-fit:cover;
+border-radius:8px;
+}
+.order-item-details{
+flex:1;
+text-align:right;
+}
+.order-item-details div{
+margin-bottom:4px;
+font-weight:600;
+}
+.total-price{
+margin-top:12px;
+font-size:18px;
+font-weight:800;
+text-align:right;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h1>شکریہ برائے خریداری!</h1>
+<p>آپ کا آرڈر کامیابی سے مکمل ہو گیا ہے۔</p>
+
+<div class="order-summary" id="orderSummary">
+<!-- Products will be dynamically added here -->
+</div>
+
+<div class="total-price" id="totalPrice">کل قیمت: Rs 0</div>
+
+<a href="index.html" class="btn">دوبارہ خریداری کریں</a>
+</div>
+
+<script>
+// Sample order data (یہ data آپ اپنے cart system سے لے سکتے ہیں)
+const orderItems = [
+{img:'https://images.unsplash.com/photo-1601924638867-3ec6d8f3f1b5?auto=format&fit=crop&w=1200&q=60', name:'Bedsheet King Cotton', price:1800, qty:1},
+{img:'https://images.unsplash.com/photo-1582582494704-0a1d2b21fa14?auto=format&fit=crop&w=1200&q=60', name:'Fashion Kurta', price:1200, qty:2},
+{img:'https://images.unsplash.com/photo-1582582494704-0a1d2b21fa14?auto=format&fit=crop&w=1200&q=60', name:'Kitchen Towel Set', price:800, qty:1}
+];
+
+const orderSummary = document.getElementById('orderSummary');
+let total = 0;
+
+orderItems.forEach(item=>{
+    const div = document.createElement('div');
+    div.className='order-item';
+    div.innerHTML=`
+        <img src="${item.img}" alt="${item.name}">
+        <div class="order-item-details">
+            <div>پروڈکٹ: ${item.name}</div>
+            <div>قیمت: Rs ${item.price}</div>
+            <div>مقدار: ${item.qty}</div>
+        </div>
+    `;
+    orderSummary.appendChild(div);
+    total += item.price * item.qty;
+});
+
+document.getElementById('totalPrice').innerText = 'کل قیمت: Rs ' + total;
+</script>
+
+</body>
+</html>
