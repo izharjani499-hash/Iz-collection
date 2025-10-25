@@ -22,7 +22,175 @@ footer {background:#264653; color:white; text-align:center; padding:15px; margin
 .cart {position:fixed; top:20px; right:20px; background:white; border:1px solid #ccc; border-radius:10px; padding:10px; width:280px; max-height:80vh; overflow:auto;}
 .cart h3 {margin-top:0;}
 .cart-item {display:flex; justify-content:space-between; margin-bottom:5px;}
+.cart-item input {width:40px; text-align:center;}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShopReseller Final</title>
+<style>
+body {font-family: Arial, sans-serif; margin:0; padding:0; background:#f9f9f9;}
+header {background:#2a9d8f; color:white; padding:20px; text-align:center;}
+nav ul {list-style:none; padding:0; display:flex; justify-content:center; margin:10px 0;}
+nav ul li {margin:0 15px;}
+nav ul li a {color:white; text-decoration:none; font-weight:bold;}
+.category-title {text-align:center; margin-top:40px; font-size:1.8em; color:#264653;}
+.products {display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:20px; padding:20px 40px;}
+.product-card {border:1px solid #ccc; border-radius:10px; padding:10px; text-align:center; background:white; transition: transform 0.2s;}
+.product-card:hover {transform: scale(1.05);}
+.product-card img {width:100%; height:auto; border-radius:10px;}
+.product-card input {width:50px; text-align:center; margin-top:5px;}
+button {background:#e76f51; color:white; border:none; padding:10px; border-radius:5px; cursor:pointer; margin-top:5px;}
+button:hover {background:#f4a261;}
+footer {background:#264653; color:white; text-align:center; padding:15px; margin-top:40px;}
+.cart {position:fixed; top:20px; right:20px; background:white; border:1px solid #ccc; border-radius:10px; padding:10px; width:280px; max-height:80vh; overflow:auto;}
+.cart h3 {margin-top:0;}
+.cart-item {display:flex; justify-content:space-between; margin-bottom:5px;}
 .cart-item input {width:40px; text-align:center;}
+.cart-total {font-weight:bold; margin-top:10px;}
+.checkout {background:#2a9d8f; color:white; border:none; padding:10px; border-radius:5px; width:100%; cursor:pointer; margin-top:10px;}
+.checkout:hover {background:#264653;}
+</style>
+</head>
+<body>
+
+<header>
+    <h1>ShopReseller Final</h1>
+    <nav>
+        <ul>
+            <li><a href="#clothing">Clothing</a></li>
+            <li><a href="#fashion">Fashion</a></li>
+            <li><a href="#bed-sheets">Bed Sheets</a></li>
+            <li><a href="#electronics">Electronics</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="cart" id="cart">
+    <h3>Shopping Cart</h3>
+    <div id="cart-items"></div>
+    <div class="cart-total" id="cart-total">Total: $0</div>
+    <button class="checkout" id="checkout">Checkout</button>
+</div>
+
+<script>
+const categories = {
+    "clothing": [
+        {name:"T-Shirt", price:20, img:"https://via.placeholder.com/200?text=T-Shirt"},
+        {name:"Jeans", price:35, img:"https://via.placeholder.com/200?text=Jeans"},
+        {name:"Jacket", price:50, img:"https://via.placeholder.com/200?text=Jacket"}
+    ],
+    "fashion": [
+        {name:"Handbag", price:45, img:"https://via.placeholder.com/200?text=Handbag"},
+        {name:"Watch", price:60, img:"https://via.placeholder.com/200?text=Watch"},
+        {name:"Sunglasses", price:25, img:"https://via.placeholder.com/200?text=Sunglasses"}
+    ],
+    "bed-sheets": [
+        {name:"Bed Sheet 1", price:25, img:"https://via.placeholder.com/200?text=Bed+Sheet+1"},
+        {name:"Bed Sheet 2", price:30, img:"https://via.placeholder.com/200?text=Bed+Sheet+2"},
+        {name:"Bed Sheet 3", price:35, img:"https://via.placeholder.com/200?text=Bed+Sheet+3"}
+    ],
+    "electronics": [
+        {name:"Headphones", price:50, img:"https://via.placeholder.com/200?text=Headphones"},
+        {name:"Smartphone", price:200, img:"https://via.placeholder.com/200?text=Smartphone"},
+        {name:"Camera", price:150, img:"https://via.placeholder.com/200?text=Camera"}
+    ]
+};
+
+const container = document.body;
+for(const cat in categories){
+    const h2 = document.createElement('h2');
+    h2.className = 'category-title';
+    h2.id = cat;
+    h2.textContent = cat.replace(/-/g,' ').toUpperCase();
+    container.appendChild(h2);
+
+    const section = document.createElement('section');
+    section.className = 'products';
+
+    categories[cat].forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'product-card';
+        div.dataset.name = p.name;
+        div.dataset.price = p.price;
+        div.innerHTML = `<img src='${p.img}' alt='${p.name}'>
+                         <h3>${p.name}</h3>
+                         <p>Price: $${p.price}</p>
+                         <input type='number' min='1' value='1'>
+                         <button>Add to Cart</button>`;
+        section.appendChild(div);
+    });
+    container.appendChild(section);
+}
+
+let cart = [];
+const cartItems = document.getElementById('cart-items');
+const cartTotal = document.getElementById('cart-total');
+
+function updateCart(){
+    cartItems.innerHTML='';
+    let total=0;
+    cart.forEach(item=>{
+        const div=document.createElement('div');
+        div.className='cart-item';
+        div.innerHTML=`${item.name} <input type='number' min='1' value='${item.qty}' data-name='${item.name}'> = $${item.price*item.qty}`;
+        cartItems.appendChild(div);
+        total+=item.price*item.qty;
+    });
+    cartTotal.textContent=`Total: $${total}`;
+}
+
+// Add to cart button
+document.addEventListener('click', e=>{
+    if(e.target.tagName==='BUTTON' && e.target.textContent==='Add to Cart'){
+        const card=e.target.parentElement;
+        const name=card.dataset.name;
+        const price=parseFloat(card.dataset.price);
+        const qty=parseInt(card.querySelector('input').value);
+        const existing=cart.find(i=>i.name===name);
+        if(existing){ existing.qty+=qty; } else { cart.push({name, price, qty}); }
+        updateCart();
+    }
+});
+
+// Two-way quantity sync
+document.addEventListener('input', e=>{
+    if(e.target.tagName==='INPUT'){
+        const name = e.target.dataset.name;
+        if(name){
+            const newQty=parseInt(e.target.value);
+            const item = cart.find(i=>i.name===name);
+            if(item){
+                item.qty=newQty;
+                updateCart();
+            }
+        } else if(e.target.parentElement.classList.contains('product-card')){
+            const card = e.target.parentElement;
+            const prodName = card.dataset.name;
+            const prodQty = parseInt(e.target.value);
+            const cartItem = cart.find(i=>i.name===prodName);
+            if(cartItem){ cartItem.qty = prodQty; updateCart(); }
+        }
+    }
+});
+
+document.getElementById('checkout').addEventListener('click', ()=>{
+    if(cart.length===0){ alert('Your cart is empty!'); return; }
+    let summary='Order Summary:\n';
+    cart.forEach(i=>summary+=`${i.name} x${i.qty} = $${i.price*i.qty}\n`);
+    summary+=cartTotal.textContent;
+    alert(summary+'\nThank you for shopping!');
+    cart=[];
+    updateCart();
+});
+</script>
+
+<footer>
+<p>© 2025 ShopReseller. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
 .cart-total {font-weight:bold; margin-top:10px;}
 .checkout {background:#2a9d8f; color:white; border:none; padding:10px; border-radius:5px; width:100%; cursor:pointer; margin-top:10px;}
 .checkout:hover {background:#264653;}
