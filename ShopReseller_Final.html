@@ -1257,6 +1257,79 @@ document.getElementById('checkout').addEventListener('click', ()=>{
             alert('براہِ مہربانی سائز منتخب کریں');
             return;
         }
+        <!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>شکریہ برائے خریداری</title>
+<style>
+body{
+margin:0;
+padding:0;
+font-family:"Noto Nastaliq Urdu", Tahoma, Arial, sans-serif;
+background: url('https://images.unsplash.com/photo-1601924638867-3ec6d8f3f1b5?auto=format&fit=crop&w=1200&q=60') no-repeat center center/cover;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+color:#fff;
+text-align:center;
+flex-direction:column;
+}
+.container{
+background:rgba(0,0,0,0.6);
+padding:40px;
+border-radius:16px;
+max-width:600px;
+width:90%;
+}
+h1{
+font-size:36px;
+margin-bottom:16px;
+}
+p{
+font-size:18px;
+margin-bottom:24px;
+}
+.btn{
+background:#ff6600;
+color:#111;
+padding:12px 24px;
+border:none;
+border-radius:12px;
+font-weight:700;
+cursor:pointer;
+text-decoration:none;
+}
+.order-summary{
+background:rgba(255,255,255,0.1);
+padding:16px;
+border-radius:12px;
+margin-top:20px;
+text-align:right;
+}
+.order-summary div{
+margin-bottom:8px;
+font-weight:600;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>شکریہ برائے خریداری!</h1>
+<p>آپ کا آرڈر کامیابی سے مکمل ہو گیا ہے۔</p>
+
+<div class="order-summary">
+<div>پروڈکٹ: Bedsheet King Cotton</div>
+<div>قیمت: Rs 1800</div>
+<div>مقدار: 1</div>
+</div>
+
+<a href="index.html" class="btn">دوبارہ خریداری کریں</a>
+</div>
+</body>
+</html>
 
         const item = {
             name: selectedProduct.name,
