@@ -575,3 +575,169 @@ document.getElementById('checkout').addEventListener('click', ()=>{
     </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reselling Panel with Categories</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f3f3;
+        }
+        /* Category Buttons */
+        .categories {
+            text-align: center;
+            padding: 15px;
+            background: #222;
+        }
+        .categories button {
+            margin: 5px;
+            padding: 10px 20px;
+            color: white;
+            background: #444;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .categories button:hover,
+        .categories button.active {
+            background: #ff6600;
+        }
+
+        /* Product Grid */
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 20px;
+        }
+        .product-card {
+            background: white;
+            border-radius: 7px;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .product-card img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .product-name {
+            font-size: 14px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Category Buttons -->
+    <div class="categories">
+        <button class="active" onclick="filterProducts('all')">All</button>
+        <button onclick="filterProducts('bedsheet')">Bedsheets</button>
+        <button onclick="filterProducts('fashion')">Fashion</button>
+        <button onclick="filterProducts('kitchen')">Kitchen</button>
+        <button onclick="filterProducts('curtain')">Curtains</button>
+    </div>
+
+    <!-- Product Section -->
+    <div class="products" id="productContainer">
+        <!-- Example 15+ Products -->
+        <!-- Bedsheet -->
+        <div class="product-card" data-category="bedsheet">
+            <img src="https://via.placeholder.com/150" alt="">
+            <div class="product-name">Bedsheet 1</div>
+        </div>
+        <div class="product-card" data-category="bedsheet">
+            <img src="https://via.placeholder.com/150" alt="">
+            <div class="product-name">Bedsheet 2</div>
+        </div>
+
+        <!-- Fashion -->
+        <div class="product-card" data-category="fashion">
+            <img src="https://via.placeholder.com/150" alt="">
+            <div class="product-name">Fashion 1</div>
+        </div>
+        <div class="product-card" data-category="fashion">
+            <img src="https://via.placeholder.com/150" alt="">
+            <div class="product-name">Fashion 2</div>
+        </div>
+
+        <!-- Kitchen -->
+        <div class="product-card" data-category="kitchen">
+            <img src="https://via.placeholder.com/150" alt="">
+            <div class="product-name">Kitchen 1</div>
+        </div>
+        <div class="product-card" data-category="kitchen">
+            <img src="https://via.placeholder.com/150" alt="">
+            <div class="product-name">Kitchen 2</div>
+        </div>
+
+        <!-- Curtains -->
+        <div class="product-card" data-category="curtain">
+            <img src="https://via.placeholder.com/150" alt="">
+            <div class="product-name">Curtain 1</div>
+        </div>
+        <div class="product-card" data-category="curtain">
+            <img src="https://via.placeholder.com/150" alt="">
+            <div class="product-name">Curtain 2</div>
+        </div>
+
+        <!-- Add More to make 15 -->
+        <div class="product-card" data-category="bedsheet">
+            <img src="https://via.placeholder.com/150" alt="">
+            <div class="product-name">Bedsheet 3</div>
+        </div>
+        <div class="product-card" data-category="fashion">
+            <img src="https://via.placeholder.com/150" alt="">
+            <div class="product-name">Fashion 3</div>
+        </div>
+        <div class="product-card" data-category="kitchen">
+            <img src="https://via.placeholder.com/150" alt="">
+            <div class="product-name">Kitchen 3</div>
+        </div>
+        <div class="product-card" data-category="curtain">
+            <img src="https://via.placeholder.com/150" alt="">
+            <div class="product-name">Curtain 3</div>
+        </div>
+        <div class="product-card" data-category="fashion">
+            <img src="https://via.placeholder.com/150" alt="">
+            <div class="product-name">Fashion 4</div>
+        </div>
+        <div class="product-card" data-category="bedsheet">
+            <img src="https://via.placeholder.com/150" alt="">
+            <div class="product-name">Bedsheet 4</div>
+        </div>
+        <div class="product-card" data-category="kitchen">
+            <img src="https://via.placeholder.com/150" alt="">
+            <div class="product-name">Kitchen 4</div>
+        </div>
+    </div>
+
+    <script>
+        function filterProducts(category) {
+            let products = document.querySelectorAll('.product-card');
+            let buttons = document.querySelectorAll('.categories button');
+
+            // Active Button Style
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Filter Products
+            products.forEach(product => {
+                if (category === 'all' || product.getAttribute('data-category') === category) {
+                    product.style.display = 'block';
+                } else {
+                    product.style.display = 'none';
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>
