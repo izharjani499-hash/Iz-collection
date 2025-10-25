@@ -741,3 +741,558 @@ document.getElementById('checkout').addEventListener('click', ()=>{
 
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Reselling Panel — Shopify style with Modal (Urdu)</title>
+<style>
+    :root{
+        --accent:#ff6600;
+        --card-bg:#fff;
+        --muted:#666;
+    }
+    *{box-sizing:border-box}
+    body{
+        margin:0;
+        font-family: "Noto Nastaliq Urdu", "Segoe UI", Tahoma, Arial, sans-serif;
+        background:#f5f5f7;
+        color:#111;
+        -webkit-font-smoothing:antialiased;
+        -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* Header */
+    .topbar{
+        background:#222;
+        color:#fff;
+        padding:12px 16px;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:12px;
+    }
+    .brand{font-weight:700;font-size:18px}
+    .cats{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .cats button{
+        background:transparent;border:1px solid rgba(255,255,255,0.08);
+        color:#fff;padding:8px 12px;border-radius:6px;cursor:pointer;
+    }
+    .cats button.active{background:var(--accent); color:#fff; border-color:var(--accent)}
+    .cart-count{background:var(--accent);color:#111;padding:6px 10px;border-radius:20px;font-weight:700}
+
+    /* Page layout */
+    .container{max-width:1200px;margin:18px auto;padding:0 16px}
+
+    /* Grid */
+    .products{
+        display:grid;
+        grid-template-columns:repeat(4,1fr);
+        gap:18px;
+    }
+    @media (max-width:1000px){ .products{grid-template-columns:repeat(3,1fr)} }
+    @media (max-width:700px){ .products{grid-template-columns:repeat(2,1fr)} }
+    @media (max-width:420px){ .products{grid-template-columns:repeat(1,1fr)} }
+
+    .card{
+        background:var(--card-bg);
+        border-radius:10px;
+        overflow:hidden;
+        box-shadow:0 6px 18px rgba(16,24,40,0.06);
+        display:flex;
+        flex-direction:column;
+        transition:transform .18s ease, box-shadow .18s ease;
+    }
+    .card:hover{transform:translateY(-6px);box-shadow:0 10px 30px rgba(16,24,40,0.12)}
+    .card img{
+        width:100%;
+        height:200px;
+        object-fit:cover;
+        display:block;
+    }
+    .card-body{padding:12px 14px;flex:1;display:flex;flex-direction:column;justify-content:space-between}
+    .title{font-size:16px;font-weight:700;margin-bottom:6px;text-align:right}
+    .price{color:var(--muted);font-weight:700;margin-bottom:10px;text-align:right}
+    .card-actions{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:8px}
+    .btn{
+        background:var(--accent);border:none;color:#111;padding:10px 12px;border-radius:8px;cursor:pointer;font-weight:700;
+    }
+    .btn.ghost{background:transparent;border:1px solid #ddd;color:#111;font-weight:600}
+    .btn.small{padding:8px 10px;font-size:14px}
+
+    /* Modal backdrop */
+    .modal-backdrop{
+        position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:60;
+        padding:24px;
+    }
+    .modal{
+        width:100%;
+        max-width:900px;
+        background:#fff;border-radius:12px;overflow:hidden;
+        display:flex;gap:0;direction:rtl;
+    }
+    @media (max-width:900px){ .modal{flex-direction:column} }
+
+    .modal-left{flex:1;min-width:320px}
+    .modal-left img{width:100%;height:100%;object-fit:cover;display:block}
+
+    .modal-right{flex:1;padding:18px 20px;display:flex;flex-direction:column;justify-content:space-between}
+    .modal-title{font-size:20px;font-weight:800;margin-bottom:6px}
+    .modal-price{color:var(--muted);font-weight:700;margin-bottom:12px}
+    .label{font-size:13px;color:#333;margin-bottom:6px;font-weight:700;text-align:right}
+    .select, .input, .qty-box{
+        width:100%;
+        margin-bottom:12px;
+    }
+    select, input[type="text"], textarea{
+        width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;font-size:14px;
+        outline:none;direction:rtl;
+    }
+    textarea{min-height:60px;resize:vertical}
+    .option-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .color-swatch{width:36px;height:36px;border-radius:8px;border:2px solid #fff;box-shadow:0 2px 6px rgba(16,24,40,0.08);cursor:pointer}
+    .color-swatch.selected{outline:3px solid rgba(0,0,0,0.08)}
+    .size-btn{padding:8px 12px;border-radius:8px;border:1px solid #ddd;cursor:pointer;background:#fff}
+    .size-btn.selected{background:var(--accent);color:#111;border-color:var(--accent);font-weight:800}
+
+    /* quantity */
+    .qty{
+        display:flex;gap:6px;align-items:center;justify-content:flex-end;
+    }
+    .qty button{width:36px;height:36px;border-radius:8px;border:1px solid #ddd;background:#fff;cursor:pointer;font-weight:700}
+    .qty .num{min-width:46px;text-align:center;font-weight:800}
+
+    /* modal footer actions */
+    .modal-actions{display:flex;gap:8px;align-items:center;justify-content:flex-end}
+    .modal-actions .btn{padding:12px 16px;border-radius:10px}
+
+    /* small toast */
+    .toast{
+        position:fixed;left:20px;bottom:20px;background:#222;color:#fff;padding:10px 14px;border-radius:8px;display:none;z-index:80;
+    }
+
+    /* helper rtl align */
+    .text-right{direction:rtl;text-align:right}
+</style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+    <div class="brand">میرا ریسلنگ اسٹور</div>
+    <div class="cats" id="categoryBar">
+        <button class="active" data-cat="all">All</button>
+        <button data-cat="bedsheet">Bedsheets</button>
+        <button data-cat="fashion">Fashion</button>
+        <button data-cat="kitchen">Kitchen</button>
+        <button data-cat="curtain">Curtains</button>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+        <div class="cart-count" id="cartCount">0</div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="products" id="productGrid">
+        <!-- 15 sample products with data- attributes -->
+        <!-- Each card contains data-name, data-price, data-colors (comma), data-sizes (comma), data-specs -->
+        <!-- Bedsheets -->
+        <div class="card" data-category="bedsheet" data-name="Bedsheet King - Cotton" data-price="Rs 1,800" data-colors="سفید,نیلا,گرے" data-sizes="Single,Double,King" data-specs="100% cotton, نرم اور پائیدار">
+            <img src="https://images.unsplash.com/photo-1601924638867-3ec6d8f3f1b5?auto=format&fit=crop&w=1200&q=60" alt="">
+            <div class="card-body">
+                <div>
+                    <div class="title">Bedsheet King - Cotton</div>
+                    <div class="price">Rs 1,800</div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn" onclick="openModal(this)">Add to Cart</button>
+                    <button class="btn ghost small" onclick="quickView(this)">Quick</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-category="bedsheet" data-name="Bedsheet Soft - Polyester" data-price="Rs 1,200" data-colors="گلابی,سفید,پیلا" data-sizes="Single,Double" data-specs="soft polyester, رنگدار">
+            <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=60" alt="">
+            <div class="card-body">
+                <div>
+                    <div class="title">Bedsheet Soft - Polyester</div>
+                    <div class="price">Rs 1,200</div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn" onclick="openModal(this)">Add to Cart</button>
+                    <button class="btn ghost small" onclick="quickView(this)">Quick</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fashion -->
+        <div class="card" data-category="fashion" data-name="Men T-Shirt - Cotton" data-price="Rs 999" data-colors="سیاہ,سفید,نیلا" data-sizes="S,M,L,XL" data-specs="Premium cotton t-shirt">
+            <img src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=1200&q=60" alt="">
+            <div class="card-body">
+                <div>
+                    <div class="title">Men T-Shirt - Cotton</div>
+                    <div class="price">Rs 999</div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn" onclick="openModal(this)">Add to Cart</button>
+                    <button class="btn ghost small" onclick="quickView(this)">Quick</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-category="fashion" data-name="Women Dress - Floral" data-price="Rs 2,499" data-colors="سرخ,گلابی,سبز" data-sizes="S,M,L" data-specs="خوبصورت فلر ڈیزائن">
+            <img src="https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?auto=format&fit=crop&w=1200&q=60" alt="">
+            <div class="card-body">
+                <div>
+                    <div class="title">Women Dress - Floral</div>
+                    <div class="price">Rs 2,499</div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn" onclick="openModal(this)">Add to Cart</button>
+                    <button class="btn ghost small" onclick="quickView(this)">Quick</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kitchen -->
+        <div class="card" data-category="kitchen" data-name="Non-stick Pan" data-price="Rs 1,699" data-colors="کالا,سرمئی" data-sizes="24cm,28cm" data-specs="High grade non-stick coating">
+            <img src="https://images.unsplash.com/photo-1523986371872-9d3ba2e2f642?auto=format&fit=crop&w=1200&q=60" alt="">
+            <div class="card-body">
+                <div>
+                    <div class="title">Non-stick Pan</div>
+                    <div class="price">Rs 1,699</div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn" onclick="openModal(this)">Add to Cart</button>
+                    <button class="btn ghost small" onclick="quickView(this)">Quick</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-category="kitchen" data-name="Ceramic Dinner Set" data-price="Rs 3,500" data-colors="سفید" data-sizes="6pcs,12pcs" data-specs="Premium ceramic, dishwasher safe">
+            <img src="https://images.unsplash.com/photo-1564758866814-5f5b6f8f7d2a?auto=format&fit=crop&w=1200&q=60" alt="">
+            <div class="card-body">
+                <div>
+                    <div class="title">Ceramic Dinner Set</div>
+                    <div class="price">Rs 3,500</div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn" onclick="openModal(this)">Add to Cart</button>
+                    <button class="btn ghost small" onclick="quickView(this)">Quick</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Curtains -->
+        <div class="card" data-category="curtain" data-name="Blackout Curtain" data-price="Rs 2,199" data-colors="کالا,نیلا" data-sizes="5x6,6x8" data-specs="Blackout fabric, thermal insulation">
+            <img src="https://images.unsplash.com/photo-1505691723518-36a7b5e7b0f9?auto=format&fit=crop&w=1200&q=60" alt="">
+            <div class="card-body">
+                <div>
+                    <div class="title">Blackout Curtain</div>
+                    <div class="price">Rs 2,199</div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn" onclick="openModal(this)">Add to Cart</button>
+                    <button class="btn ghost small" onclick="quickView(this)">Quick</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- More items to make 15 -->
+        <div class="card" data-category="bedsheet" data-name="Bedsheet Floral - 2pcs" data-price="Rs 1,399" data-colors="گلابی,سبز" data-sizes="Double,King" data-specs="Floral print, 2pcs set">
+            <img src="https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=1200&q=60" alt="">
+            <div class="card-body">
+                <div>
+                    <div class="title">Bedsheet Floral - 2pcs</div>
+                    <div class="price">Rs 1,399</div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn" onclick="openModal(this)">Add to Cart</button>
+                    <button class="btn ghost small" onclick="quickView(this)">Quick</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-category="fashion" data-name="Kids Shirt" data-price="Rs 599" data-colors="پیلا,نیلا" data-sizes="XS,S,M" data-specs="Soft fabric for kids">
+            <img src="https://images.unsplash.com/photo-1542144612-1e5b9b7a7f43?auto=format&fit=crop&w=1200&q=60" alt="">
+            <div class="card-body">
+                <div>
+                    <div class="title">Kids Shirt</div>
+                    <div class="price">Rs 599</div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn" onclick="openModal(this)">Add to Cart</button>
+                    <button class="btn ghost small" onclick="quickView(this)">Quick</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-category="kitchen" data-name="Stainless Bottle 1L" data-price="Rs 899" data-colors="چاندی,کالا" data-sizes="1L,750ml" data-specs="Thermal, keeps hot/cold">
+            <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=60" alt="">
+            <div class="card-body">
+                <div>
+                    <div class="title">Stainless Bottle 1L</div>
+                    <div class="price">Rs 899</div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn" onclick="openModal(this)">Add to Cart</button>
+                    <button class="btn ghost small" onclick="quickView(this)">Quick</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-category="curtain" data-name="Sheer Curtain" data-price="Rs 799" data-colors="سفید,کریم" data-sizes="4x5,5x6" data-specs="Light sheer fabric">
+            <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=60" alt="">
+            <div class="card-body">
+                <div>
+                    <div class="title">Sheer Curtain</div>
+                    <div class="price">Rs 799</div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn" onclick="openModal(this)">Add to Cart</button>
+                    <button class="btn ghost small" onclick="quickView(this)">Quick</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-category="fashion" data-name="Ladies Scarf" data-price="Rs 349" data-colors="گلابی,کریم" data-sizes="One Size" data-specs="Light scarf for summer">
+            <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1200&q=60" alt="">
+            <div class="card-body">
+                <div>
+                    <div class="title">Ladies Scarf</div>
+                    <div class="price">Rs 349</div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn" onclick="openModal(this)">Add to Cart</button>
+                    <button class="btn ghost small" onclick="quickView(this)">Quick</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-category="bedsheet" data-name="Bedsheet Luxury - Satin" data-price="Rs 3,299" data-colors="سنہری,کریم" data-sizes="Double,King" data-specs="Satin finish, luxury feel">
+            <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=60" alt="">
+            <div class="card-body">
+                <div>
+                    <div class="title">Bedsheet Luxury - Satin</div>
+                    <div class="price">Rs 3,299</div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn" onclick="openModal(this)">Add to Cart</button>
+                    <button class="btn ghost small" onclick="quickView(this)">Quick</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-hidden="true">
+    <div class="modal" role="document" aria-modal="true">
+        <div class="modal-left" id="modalImageWrap">
+            <img id="modalImage" src="" alt="">
+        </div>
+        <div class="modal-right">
+            <div>
+                <div class="modal-title text-right" id="modalTitle">Product Name</div>
+                <div class="modal-price text-right" id="modalPrice">Rs 0</div>
+
+                <div class="label text-right">تفصیل</div>
+                <div style="margin-bottom:12px" id="modalSpecs">تفصیلی معلومات یہاں دکھیں گی</div>
+
+                <div class="label text-right">رنگ منتخب کریں</div>
+                <div class="option-row" id="modalColors"></div>
+
+                <div class="label text-right">سائز منتخب کریں</div>
+                <div class="option-row" id="modalSizes"></div>
+
+                <div class="label text-right">خصوصیات / Spaces (اختیاری)</div>
+                <textarea id="modalSpace" placeholder="مثلاً: color tone/ custom note"></textarea>
+
+                <div class="label text-right">تعداد</div>
+                <div class="qty-box">
+                    <div class="qty">
+                        <button type="button" onclick="changeQty(-1)">−</button>
+                        <div class="num" id="qtyNum">1</div>
+                        <button type="button" onclick="changeQty(1)">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn ghost" onclick="closeModal()">منسوخ کریں</button>
+                <button class="btn" id="confirmAdd">کارٹ میں شامل کریں</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast">Product added</div>
+
+<script>
+    // Globals for modal
+    let selectedProduct = null;
+    let cart = [];
+    const cartCountEl = document.getElementById('cartCount');
+
+    // Category filter
+    document.getElementById('categoryBar').addEventListener('click', (e)=>{
+        if(e.target.tagName === 'BUTTON'){
+            const cat = e.target.getAttribute('data-cat');
+            document.querySelectorAll('.cats button').forEach(b=>b.classList.remove('active'));
+            e.target.classList.add('active');
+            filterByCategory(cat);
+        }
+    });
+
+    function filterByCategory(cat){
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card=>{
+            if(cat === 'all' || card.getAttribute('data-category') === cat){
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    // Open modal: receives the button element inside the card
+    function openModal(btn){
+        const card = btn.closest('.card');
+        selectedProduct = {
+            name: card.getAttribute('data-name'),
+            price: card.getAttribute('data-price'),
+            colors: card.getAttribute('data-colors') || '',
+            sizes: card.getAttribute('data-sizes') || '',
+            specs: card.getAttribute('data-specs') || '',
+            img: card.querySelector('img').src
+        };
+        // fill modal
+        document.getElementById('modalTitle').textContent = selectedProduct.name;
+        document.getElementById('modalPrice').textContent = selectedProduct.price;
+        document.getElementById('modalSpecs').textContent = selectedProduct.specs;
+        document.getElementById('modalImage').src = selectedProduct.img;
+        document.getElementById('qtyNum').textContent = 1;
+        document.getElementById('modalSpace').value = '';
+
+        // populate colors
+        const colorsWrap = document.getElementById('modalColors');
+        colorsWrap.innerHTML = '';
+        const colors = selectedProduct.colors.split(',');
+        colors.forEach((c, idx)=>{
+            const sw = document.createElement('div');
+            sw.className = 'color-swatch';
+            sw.title = c.trim();
+            sw.setAttribute('data-val', c.trim());
+            // create simple color mapping for look (not exact Urdu colors)
+            try{
+                // basic map
+                let map = {'سفید':'#ffffff','نیلا':'#2b6cb0','گرے':'#9aa0a6','گلابی':'#ffb6c1','پیلا':'#ffd54f','سرخ':'#d32f2f','سبز':'#2e7d32','کالا':'#111','کریم':'#efe1c6','سنہری':'#d4af37','چاندی':'#c0c0c0'};
+                sw.style.background = map[c.trim()] || '#ddd';
+            }catch(e){ sw.style.background = '#ddd' }
+            sw.onclick = ()=>{document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('selected')); sw.classList.add('selected')};
+            colorsWrap.appendChild(sw);
+        });
+
+        // populate sizes
+        const sizesWrap = document.getElementById('modalSizes');
+        sizesWrap.innerHTML = '';
+        const sizes = selectedProduct.sizes.split(',');
+        sizes.forEach((s, idx)=>{
+            const sb = document.createElement('button');
+            sb.className = 'size-btn';
+            sb.textContent = s.trim();
+            sb.setAttribute('data-val', s.trim());
+            sb.onclick = (ev)=>{
+                document.querySelectorAll('.size-btn').forEach(b=>b.classList.remove('selected'));
+                sb.classList.add('selected');
+            };
+            sizesWrap.appendChild(sb);
+        });
+
+        // update confirm button text
+        document.getElementById('confirmAdd').textContent = 'کارٹ میں شامل کریں — ' + selectedProduct.name;
+
+        // show modal
+        const back = document.getElementById('modalBackdrop');
+        back.style.display = 'flex';
+        back.setAttribute('aria-hidden','false');
+
+        // close when clicking backdrop (but not modal itself)
+        back.onclick = (e)=>{
+            if(e.target === back) closeModal();
+        };
+    }
+
+    function closeModal(){
+        const back = document.getElementById('modalBackdrop');
+        back.style.display = 'none';
+        back.setAttribute('aria-hidden','true');
+    }
+
+    function changeQty(delta){
+        const el = document.getElementById('qtyNum');
+        let n = parseInt(el.textContent) || 1;
+        n += delta;
+        if(n < 1) n = 1;
+        el.textContent = n;
+    }
+
+    // Confirm add to cart
+    document.getElementById('confirmAdd').addEventListener('click', ()=>{
+        if(!selectedProduct) return;
+        // gather chosen color & size
+        const colorEl = document.querySelector('.color-swatch.selected');
+        const sizeEl = document.querySelector('.size-btn.selected');
+        const spaceVal = document.getElementById('modalSpace').value.trim();
+        const qty = parseInt(document.getElementById('qtyNum').textContent) || 1;
+
+        // if colors or sizes exist, ensure selection (optional)
+        if(selectedProduct.colors && selectedProduct.colors.trim() !== '' && !colorEl){
+            alert('براہِ مہربانی رنگ منتخب کریں');
+            return;
+        }
+        if(selectedProduct.sizes && selectedProduct.sizes.trim() !== '' && !sizeEl){
+            alert('براہِ مہربانی سائز منتخب کریں');
+            return;
+        }
+
+        const item = {
+            name: selectedProduct.name,
+            price: selectedProduct.price,
+            color: colorEl ? colorEl.getAttribute('data-val') : '',
+            size: sizeEl ? sizeEl.getAttribute('data-val') : '',
+            space: spaceVal,
+            qty: qty,
+            img: selectedProduct.img
+        };
+        cart.push(item);
+        updateCartCount();
+        closeModal();
+        showToast('کارٹ میں شامل ہو گیا: ' + item.name + ' ×' + item.qty);
+        console.log('Cart:', cart);
+    });
+
+    function updateCartCount(){
+        document.getElementById('cartCount').textContent = cart.length;
+    }
+
+    function showToast(text){
+        const t = document.getElementById('toast');
+        t.textContent = text;
+        t.style.display = 'block';
+        setTimeout(()=>{ t.style.display = 'none'; }, 2200);
+    }
+
+    // Quick view (simple)
+    function quickView(btn){
+        const card = btn.closest('.card');
+        alert(card.getAttribute('data-name') + '\n' + card.getAttribute('data-price') + '\n' + card.getAttribute('data-specs'));
+    }
+
+    // Initial: show all (already)
+    filterByCategory('all');
+</script>
+</body>
+</html>
